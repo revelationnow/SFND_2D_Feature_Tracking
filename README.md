@@ -39,4 +39,12 @@ See the classroom instruction and code comments for more details on each of thes
 3. The time taken for the different detector and descriptor pairs is in time_taken.html
 
 
+# NUMBER OF KEYPOINTS
+
 ![](keypoints.png?raw=true)
+
+# NUMBER OF MATCHES
+![](matches.png?raw=true)
+
+# TIME TAKEN
+![](time_taken.png?raw=true)
