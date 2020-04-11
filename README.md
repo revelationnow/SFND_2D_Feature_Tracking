@@ -40,11 +40,31 @@ See the classroom instruction and code comments for more details on each of thes
 
 
 # NUMBER OF KEYPOINTS
+![](keypoints.svg?raw=true)
 
-![](keypoints.png?raw=true)
+Clearly FAST appears to detect a lot more keypoints than the other detectors. BRISK comes in second place while the remaining appear to be close to each other in the number of points detected. The SHITOMASI and SIFT detectors have a much tighter bound than the others across the different images, indicating a possibility that they might be more robust, however these need to be tested over a much larger corpus of images to make that claim.
+
 
 # NUMBER OF MATCHES
-![](matches.png?raw=true)
+![](matches.svg?raw=true)
+
+Here again FAST appears to have a lot more matches compared to other detectors, regardless of the descriptor type used. This is likely an artifact of having detected a large number of keypoints in the first place. If we take a ratio of number of keypoints to number of matches, we see this metric is very similar between detectors and descriptors.
+
+![](keyp_by_matches.svg?raw=true)
+
+The above image normalizes the number of matches by keypoints. Here we see that the spread of the matches per keypoint is very diverse. The Harris detector for instance is very easily thrown off. AKAZE appears to be the most robust here. FAST has a large number of keypoints and matches, however the quality of the matches appears to be lower compared to AKAZE, but it is still pretty close when used with a SIFT descriptor. This is true for ORB detectors with SIFT descriptors as well. SIFT and
+BRISK are the next in line.
+
 
 # TIME TAKEN
-![](time_taken.png?raw=true)
+![](time_taken.svg?raw=true)
+
+From a time taken perspective, FAST appears to be the fastest, followed by ORB and SHITOMASI, subsequently followed by SIFT and HARRIS. Here the choice of descriptor appears to affect the results a lot. BRISK despite its name is a pretty slow choice, all the detectors show their slowest performance using BRISK. BRISK is also not the best in the matches per keypoint metric.
+
+# FINAL CONCLUSION
+
+The Top 3 Detector/Descriptor pairs based on a combination of number of keypoints, quality of keypoints and time taken are:
+
+1. FAST Detector with SIFT Descriptors
+2. ORB Detector with SIFT Descriptors
+3. AKAZE Detector with AKAZE Descriptors

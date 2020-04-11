@@ -5,7 +5,7 @@
 using namespace std;
 
 // Find best matches for keypoints in two camera images based on several matching methods
-void KeyPointDetectors::matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::KeyPoint> &kPtsRef, cv::Mat &descSource, cv::Mat &descRef,
+void KeyPointProcessor::matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::KeyPoint> &kPtsRef, cv::Mat &descSource, cv::Mat &descRef,
                       std::vector<cv::DMatch> &matches, std::string descriptorType, std::string matcherType, std::string selectorType)
 {
     //std::cout<<"Starting matching"<<std::endl;
@@ -49,7 +49,7 @@ void KeyPointDetectors::matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, 
 }
 
 // Detect keypoints in image using the traditional Shi-Thomasi detector
-void KeyPointDetectors::detKeypointsShiTomasi(vector<cv::KeyPoint> &keypoints, cv::Mat &img)
+void KeyPointProcessor::detKeypointsShiTomasi(vector<cv::KeyPoint> &keypoints, cv::Mat &img)
 {
     // compute detector parameters based on image size
     int blockSize = 4;       //  size of an average block for computing a derivative covariation matrix over each pixel neighborhood
@@ -75,7 +75,7 @@ void KeyPointDetectors::detKeypointsShiTomasi(vector<cv::KeyPoint> &keypoints, c
     }
 }
 
-void KeyPointDetectors::detKeypointsHarris(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img)
+void KeyPointProcessor::detKeypointsHarris(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img)
 {
   int blockSize = 2;
   int apertureSize = 3;
@@ -113,27 +113,27 @@ void KeyPointDetectors::detKeypointsHarris(std::vector<cv::KeyPoint> &keypoints,
   }
 }
 
-void KeyPointDetectors::detKeypointsFast(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img)
+void KeyPointProcessor::detKeypointsFast(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img)
 {
   auto detector = cv::FastFeatureDetector::create();
   detector->detect(img, keypoints);
 }
-void KeyPointDetectors::detKeypointsBrisk(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img)
+void KeyPointProcessor::detKeypointsBrisk(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img)
 {
   auto detector = cv::BRISK::create();
   detector->detect(img, keypoints);
 }
-void KeyPointDetectors::detKeypointsOrb(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img)
+void KeyPointProcessor::detKeypointsOrb(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img)
 {
   auto detector = cv::ORB::create();
   detector->detect(img, keypoints);
 }
-void KeyPointDetectors::detKeypointsAkaze(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img)
+void KeyPointProcessor::detKeypointsAkaze(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img)
 {
   auto detector = cv::AKAZE::create();
   detector->detect(img, keypoints);
 }
-void KeyPointDetectors::detKeypointsSift(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img)
+void KeyPointProcessor::detKeypointsSift(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img)
 {
   auto detector = cv::xfeatures2d::SIFT::create();
   detector->detect(img, keypoints);

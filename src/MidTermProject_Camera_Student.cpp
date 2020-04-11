@@ -16,45 +16,33 @@
 #include "dataStructures.h"
 #include "matching2D.hpp"
 #include <deque>
-#include <array>
+#include <algorithm>
 
 using namespace std;
 
 /* MAIN PROGRAM */
 int main(int argc, const char *argv[])
 {
+  std::vector<string> detectors_1   = {"SHITOMASI","HARRIS","FAST","BRISK","ORB"};
+  std::vector<string> descriptors_1 = {"BRISK", "BRIEF", "ORB", "FREAK", "SIFT"};
+  std::vector<string> detectors_2   = {"AKAZE"};
+  std::vector<string> descriptors_2 = {"AKAZE"};
+  std::vector<string> detectors_3   = {"SIFT"};
+  std::vector<string> descriptors_3 = {"BRISK", "BRIEF", "FREAK", "SIFT"};
 
-  std::array<string, 7> detectors   = {"SHITOMASI", "HARRIS", "FAST","BRISK","ORB","AKAZE", "SIFT"};
-  std::array<string, 6> descriptors = {"BRISK", "BRIEF", "ORB", "FREAK", "AKAZE", "SIFT"};
+  std::vector<std::pair<std::vector<string>,std::vector<string> > > det_desc_groups;
+  det_desc_groups.push_back(std::make_pair(detectors_1, descriptors_1));
+  det_desc_groups.push_back(std::make_pair(detectors_2, descriptors_2));
+  det_desc_groups.push_back(std::make_pair(detectors_3, descriptors_3));
+
   ofstream f1;
   f1.open("./results.csv");
-  f1<<"Detector,Descriptor,image_num,num_keypoints,num_matches,time_take"<<endl;
-  for(auto detectorType : detectors)
+  f1<<"Detector,Descriptor,image_num,num_keypoints,num_matches,time_take,keyp_by_matches"<<endl;
+  for(auto det_desc_group : det_desc_groups)
+  for(auto detectorType : det_desc_group.first)
   {
-    for(auto descriptorType : descriptors)
+    for(auto descriptorType : det_desc_group.second)
     {
-      if(detectorType.compare("SIFT") == 0)
-      {
-        if(descriptorType.compare("SIFT") != 0)
-        {
-          continue;
-        }
-      }
-      else if(descriptorType.compare("SIFT") == 0)
-      {
-        continue;
-      }
-      if(detectorType.compare("AKAZE") == 0)
-      {
-        if(descriptorType.compare("AKAZE") != 0)
-        {
-          continue;
-        }
-      }
-      else if(descriptorType.compare("AKAZE") == 0)
-      {
-        continue;
-      }
       std::cout<<"Trying detector "<<detectorType<<" with descriptor "<<descriptorType<<std::endl;
       /* INIT VARIABLES AND DATA STRUCTURES */
       // data location
@@ -72,7 +60,7 @@ int main(int argc, const char *argv[])
       int dataBufferSize = 2;       // no. of images which are held in memory (ring buffer) at the same time
       deque<DataFrame> dataBuffer; // list of data frames which are held in memory at the same time
       bool bVis = false;            // visualize results
-      KeyPointDetectors keyPointDetector;
+      KeyPointProcessor keyPointDetector;
 
       /* MAIN LOOP OVER ALL IMAGES */
       for (size_t imgIndex = 0; imgIndex <= imgEndIndex - imgStartIndex; imgIndex++)
@@ -179,11 +167,11 @@ int main(int argc, const char *argv[])
           vector<cv::DMatch> matches;
           string matcherType = "MAT_BF";        // MAT_BF, MAT_FLANN
           string descriptorMatchType = "DES_BINARY"; // DES_BINARY, DES_HOG
-          if(detectorType.compare("SIFT") == 0)
+          if(descriptorType.compare("SIFT") == 0)
           {
             descriptorMatchType = "DES_HOG";
           }
-          string selectorType = "SEL_NN";       // SEL_NN, SEL_KNN
+          string selectorType = "SEL_KNN";       // SEL_NN, SEL_KNN
 
           //// STUDENT ASSIGNMENT
           //// TASK MP.5 -> add FLANN matching in file matching2D.cpp
@@ -220,7 +208,14 @@ int main(int argc, const char *argv[])
           bVis = false;
           t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
           std::cout<<"Num Keypoints : "<<keypoints.size()<<" num matches : "<<matches.size()<<" Time taken : "<<1000 * t/1.0<<"ms"<<std::endl;
-          f1<<detectorType<<","<<descriptorType<<","<<imgIndex<<","<<keypoints.size()<<","<<matches.size()<<","<<1000*t/1.0<<std::endl;
+          f1<<detectorType <<","
+            <<descriptorType <<","
+            <<imgIndex <<","
+            <<keypoints.size() <<","
+            <<matches.size() <<","
+            <<1000*t/1.0 <<","
+            <<std::min(1.0,(double)(matches.size())/(double)(keypoints.size()))
+            <<std::endl;
         }
 
       } // eof loop over all images

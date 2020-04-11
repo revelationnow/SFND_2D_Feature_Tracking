@@ -26,29 +26,29 @@
 void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::KeyPoint> &kPtsRef, cv::Mat &descSource, cv::Mat &descRef,
                       std::vector<cv::DMatch> &matches, std::string descriptorType, std::string matcherType, std::string selectorType);
 
-class KeyPointDetectors
+class KeyPointProcessor
 {
   private:
-    std::map<std::string, void (KeyPointDetectors::*) (std::vector<cv::KeyPoint> &, cv::Mat &)> _detMap;
-    std::map<std::string, cv::Ptr<cv::DescriptorExtractor> (KeyPointDetectors::*) (int, int, float)> _descMap;
+    std::map<std::string, void (KeyPointProcessor::*) (std::vector<cv::KeyPoint> &, cv::Mat &)> _detMap;
+    std::map<std::string, cv::Ptr<cv::DescriptorExtractor> (KeyPointProcessor::*) ()> _descMap;
   public:
-    KeyPointDetectors()
+    KeyPointProcessor()
     {
-      _detMap["SHITOMASI"] = &KeyPointDetectors::detKeypointsShiTomasi;
-      _detMap["HARRIS"]    = &KeyPointDetectors::detKeypointsHarris;
-      _detMap["FAST"]      = &KeyPointDetectors::detKeypointsFast;
-      _detMap["BRISK"]     = &KeyPointDetectors::detKeypointsBrisk;
-      _detMap["ORB"]       = &KeyPointDetectors::detKeypointsOrb;
-      _detMap["AKAZE"]     = &KeyPointDetectors::detKeypointsAkaze;
-      _detMap["SIFT"]      = &KeyPointDetectors::detKeypointsSift;
+      _detMap["SHITOMASI"] = &KeyPointProcessor::detKeypointsShiTomasi;
+      _detMap["HARRIS"]    = &KeyPointProcessor::detKeypointsHarris;
+      _detMap["FAST"]      = &KeyPointProcessor::detKeypointsFast;
+      _detMap["BRISK"]     = &KeyPointProcessor::detKeypointsBrisk;
+      _detMap["ORB"]       = &KeyPointProcessor::detKeypointsOrb;
+      _detMap["AKAZE"]     = &KeyPointProcessor::detKeypointsAkaze;
+      _detMap["SIFT"]      = &KeyPointProcessor::detKeypointsSift;
 
 
-      _descMap["BRISK"] = &KeyPointDetectors::descKeypointsBriskExtractor;
-      _descMap["BRIEF"] = &KeyPointDetectors::descKeypointsBriefExtractor;
-      _descMap["ORB"]   = &KeyPointDetectors::descKeypointsOrbExtractor;
-      _descMap["FREAK"] = &KeyPointDetectors::descKeypointsFreakExtractor;
-      _descMap["AKAZE"] = &KeyPointDetectors::descKeypointsAkazeExtractor;
-      _descMap["SIFT"]  = &KeyPointDetectors::descKeypointsSiftExtractor;
+      _descMap["BRISK"] = &KeyPointProcessor::descKeypointsBriskExtractor;
+      _descMap["BRIEF"] = &KeyPointProcessor::descKeypointsBriefExtractor;
+      _descMap["ORB"]   = &KeyPointProcessor::descKeypointsOrbExtractor;
+      _descMap["FREAK"] = &KeyPointProcessor::descKeypointsFreakExtractor;
+      _descMap["AKAZE"] = &KeyPointProcessor::descKeypointsAkazeExtractor;
+      _descMap["SIFT"]  = &KeyPointProcessor::descKeypointsSiftExtractor;
     }
     void visualize(std::string detectorType, std::vector<cv::KeyPoint> &keypoints, cv::Mat &img)
     {
@@ -66,7 +66,7 @@ class KeyPointDetectors
       {
         if(keypoints.size() > 0)
         {
-          auto extractor = (this->*_descMap[descriptorType])(30, 3, 1.0);
+          auto extractor = (this->*_descMap[descriptorType])();
           double t = (double)cv::getTickCount();
           extractor->compute(img, keypoints, descriptors);
           t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
@@ -78,32 +78,35 @@ class KeyPointDetectors
         std::cout<<"ERROR!!! : Descriptor type "<< descriptorType <<" not supported!!"<<std::endl;
       }
     }
-    cv::Ptr<cv::DescriptorExtractor> descKeypointsSiftExtractor(int threshold, int octaves, float patternScale)
+    cv::Ptr<cv::DescriptorExtractor> descKeypointsSiftExtractor()
     {
       return cv::xfeatures2d::SIFT::create();
     }
 
-    cv::Ptr<cv::DescriptorExtractor> descKeypointsFreakExtractor(int threshold, int octaves, float patternScale)
+    cv::Ptr<cv::DescriptorExtractor> descKeypointsFreakExtractor()
     {
       return cv::xfeatures2d::FREAK::create();
     }
 
-    cv::Ptr<cv::DescriptorExtractor> descKeypointsOrbExtractor(int threshold, int octaves, float patternScale)
+    cv::Ptr<cv::DescriptorExtractor> descKeypointsOrbExtractor()
     {
       return cv::ORB::create();
     }
 
-    cv::Ptr<cv::DescriptorExtractor> descKeypointsBriskExtractor(int threshold, int octaves, float patternScale)
+    cv::Ptr<cv::DescriptorExtractor> descKeypointsBriskExtractor()
     {
+      int threshold = 30;
+      int octaves = 3;
+      float patternScale = 1.0;
       return cv::BRISK::create(threshold, octaves, patternScale);
     }
 
-    cv::Ptr<cv::DescriptorExtractor> descKeypointsAkazeExtractor(int threshold, int octaves, float patternScale)
+    cv::Ptr<cv::DescriptorExtractor> descKeypointsAkazeExtractor()
     {
       return cv::AKAZE::create();
     }
 
-    cv::Ptr<cv::DescriptorExtractor> descKeypointsBriefExtractor(int threshold, int octaves, float patternScale)
+    cv::Ptr<cv::DescriptorExtractor> descKeypointsBriefExtractor()
     {
       return cv::xfeatures2d::BriefDescriptorExtractor::create();
     }
