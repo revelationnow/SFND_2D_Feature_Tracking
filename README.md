@@ -34,7 +34,7 @@ See the classroom instruction and code comments for more details on each of thes
 4. Run it: `./2D_feature_tracking`.
 
 
-
+{% raw %}
     <div>
 
         <script type="text/javascript">window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
@@ -63,3 +63,4 @@ See the classroom instruction and code comments for more details on each of thes
                 
             </script>
         </div>
+{% endraw %}
